@@ -4,19 +4,43 @@ import type { PageResult, PageParams } from '@/types/global'
 import { getHomeGoodsGuessLikeAPI } from '@/services/home'
 import { onMounted, ref } from 'vue'
 
-//获取猜你喜欢数据
-const guessList = ref<GuessItem[]>([])
-const getHomeGoodsGuessLikeData = async () => {
-  const res = await getHomeGoodsGuessLikeAPI()
-  guessList.value = res.result.items
+// 分页参数
+const pageParams: Required<PageParams> = {
+  page: 1,
+  pageSize: 10,
 }
 
-//组件挂载完毕
+// 获取猜你喜欢的列表
+const guessList = ref<GuessItem[]>([])
+// 已结束标记
+const finsh = ref(false)
+//获取猜你喜欢数据
+const getHomeGoodsGuessLikeData = async () => {
+  const res = await getHomeGoodsGuessLikeAPI(pageParams)
+  // 退出判断
+  if (finsh.value == true) {
+    return uni.showToast({
+      title: '没有更多数据了~',
+      icon: 'none',
+    })
+  }
+  // 数组追加
+  guessList.value.push(...res.result.items)
+  // 分页条件
+  if (pageParams.page < res.result.pages) {
+    // 页码累加
+    pageParams.page++
+  } else {
+    finsh.value = true
+  }
+}
+
+// 组件挂载完毕
 onMounted(() => {
   getHomeGoodsGuessLikeData()
 })
 
-//暴露方法
+// 暴露方法
 defineExpose({
   getMore: getHomeGoodsGuessLikeData,
 })
@@ -42,7 +66,7 @@ defineExpose({
       </view>
     </navigator>
   </view>
-  <view class="loading-text"> 正在加载... </view>
+  <view class="loading-text">{{ finsh ? '没有更多数据了~' : '正在加载...' }} </view>
 </template>
 
 <style lang="scss">

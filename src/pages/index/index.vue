@@ -34,7 +34,7 @@ const guessRef = ref<XtxGuessInstance>()
 // 滚动触底
 const onScrolltolower = () => {
   // console.log('滚动触底啦')
-  guessRef.value?.getMore
+  guessRef.value?.getMore()
 }
 
 onLoad(() => {
