@@ -33,8 +33,25 @@ const getHomeHotData = async () => {
 const guessRef = ref<XtxGuessInstance>()
 // 滚动触底
 const onScrolltolower = () => {
-  // console.log('滚动触底啦')
   guessRef.value?.getMore()
+}
+
+const isTriggered = ref(false)
+// 自定义下拉刷新被触发
+const onRefresherrefresh = async () => {
+  // 开启动画
+  isTriggered.value = true
+  // 加载数据
+  // 重置猜你喜欢组件数据
+  guessRef.value?.resetData()
+  await Promise.all([
+    getHomeBannerData(),
+    getHomeCategoryData(),
+    getHomeHotData(),
+    guessRef.value?.getMore(),
+  ])
+  // 关闭动画
+  isTriggered.value = false
 }
 
 onLoad(() => {
@@ -47,7 +64,14 @@ onLoad(() => {
 <template>
   <!-- 自定义导航栏 -->
   <CustomNavBar />
-  <scroll-view @scrolltolower="onScrolltolower" class="scroll-view" scroll-y>
+  <scroll-view
+    refresher-enabled
+    @refresherrefresh="onRefresherrefresh"
+    :refresher-triggered="isTriggered"
+    @scrolltolower="onScrolltolower"
+    class="scroll-view"
+    scroll-y
+  >
     <!-- 自定义轮播图 -->
     <XtxSwiper :list="bannerList" />
     <!-- 分类面板 -->

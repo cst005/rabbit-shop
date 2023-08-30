@@ -13,12 +13,12 @@ const pageParams: Required<PageParams> = {
 // 获取猜你喜欢的列表
 const guessList = ref<GuessItem[]>([])
 // 已结束标记
-const finsh = ref(false)
+const finish = ref(false)
 //获取猜你喜欢数据
 const getHomeGoodsGuessLikeData = async () => {
   const res = await getHomeGoodsGuessLikeAPI(pageParams)
   // 退出判断
-  if (finsh.value == true) {
+  if (finish.value == true) {
     return uni.showToast({
       title: '没有更多数据了~',
       icon: 'none',
@@ -31,8 +31,15 @@ const getHomeGoodsGuessLikeData = async () => {
     // 页码累加
     pageParams.page++
   } else {
-    finsh.value = true
+    finish.value = true
   }
+}
+
+// 重置数据
+const resetData = () => {
+  pageParams.page = 1
+  guessList.value = []
+  finish.value = false
 }
 
 // 组件挂载完毕
@@ -43,6 +50,7 @@ onMounted(() => {
 // 暴露方法
 defineExpose({
   getMore: getHomeGoodsGuessLikeData,
+  resetData,
 })
 </script>
 
@@ -66,7 +74,7 @@ defineExpose({
       </view>
     </navigator>
   </view>
-  <view class="loading-text">{{ finsh ? '没有更多数据了~' : '正在加载...' }} </view>
+  <view class="loading-text">{{ finish ? '没有更多数据了~' : '正在加载...' }} </view>
 </template>
 
 <style lang="scss">
