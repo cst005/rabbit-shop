@@ -5,8 +5,9 @@ import type { CategoryTopItem } from '@/types/category'
 import type { BannerItem } from '@/types/home'
 import { onLoad } from '@dcloudio/uni-app'
 import { computed, ref } from 'vue'
+import CategoryPageSkeleton from './components/CategoryPageSkeleton.vue'
 
-//获取轮播图数据
+// 获取轮播图数据
 const bannerList = ref<BannerItem[]>([])
 const getBannerData = async () => {
   const res = await getHomeBannerAPI(2)
@@ -15,18 +16,18 @@ const getBannerData = async () => {
 
 // 获取分类列表数据
 const categoryList = ref<CategoryTopItem[]>([])
+const activeIndex = ref(0)
 const getCategoryTopData = async () => {
   const res = await getCategoryTopAPI()
   categoryList.value = res.result
 }
 
-// 高亮下标
-const activeIndex = ref(0)
-
+// 是否数据加载完毕
+const isFinish = ref(false)
 // 页面加载
-onLoad(() => {
-  getBannerData()
-  getCategoryTopData()
+onLoad(async () => {
+  await Promise.all([getBannerData(), getCategoryTopData()])
+  isFinish.value = true
 })
 
 // 提取当前二级分类数据
@@ -36,7 +37,7 @@ const subCategoryList = computed(() => {
 </script>
 
 <template>
-  <view class="viewport">
+  <view class="viewport" v-if="isFinish">
     <!-- 搜索框 -->
     <view class="search">
       <view class="input">
@@ -54,7 +55,9 @@ const subCategoryList = computed(() => {
           :class="{ active: index === activeIndex }"
           @tap="activeIndex = index"
         >
-          <text class="name"> {{ item.name }} </text>
+          <text class="name">
+            {{ item.name }}
+          </text>
         </view>
       </scroll-view>
       <!-- 右侧：二级分类 -->
@@ -87,6 +90,8 @@ const subCategoryList = computed(() => {
       </scroll-view>
     </view>
   </view>
+  <!-- 骨架屏 -->
+  <CategoryPageSkeleton v-else />
 </template>
 
 <style lang="scss">
