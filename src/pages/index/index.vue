@@ -7,7 +7,8 @@ import CustomNavBar from './components/CustomNavBar.vue'
 import CategoryPanel from './components/CategoryPanel.vue'
 import PageSkeleton from './components/PageSkeleton.vue'
 import HotPanel from './components/HotPanel.vue'
-import type { XtxGuessInstance } from '@/components/components'
+import type { XtxGuessInstance } from '@/types/components'
+import { useGuessList } from '@/composables'
 
 //获取轮播图数据
 const bannerList = ref<BannerItem[]>([])
@@ -30,12 +31,8 @@ const getHomeHotData = async () => {
   hotList.value = res.result
 }
 
-// 获取猜你喜欢组件实例
-const guessRef = ref<XtxGuessInstance>()
-// 滚动触底
-const onScrolltolower = () => {
-  guessRef.value?.getMore()
-}
+// 猜你喜欢组合式函数
+const { guessRef, onScrolltolower } = useGuessList()
 
 const isTriggered = ref(false)
 // 自定义下拉刷新被触发
@@ -102,3 +99,4 @@ page {
   flex: 1;
 }
 </style>
+@/types/components
