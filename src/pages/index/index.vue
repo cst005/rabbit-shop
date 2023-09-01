@@ -7,7 +7,6 @@ import CustomNavBar from './components/CustomNavBar.vue'
 import CategoryPanel from './components/CategoryPanel.vue'
 import PageSkeleton from './components/PageSkeleton.vue'
 import HotPanel from './components/HotPanel.vue'
-import type { XtxGuessInstance } from '@/types/components'
 import { useGuessList } from '@/composables'
 
 //获取轮播图数据
