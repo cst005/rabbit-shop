@@ -31,7 +31,7 @@ const activeIndex = ref(orderTabs.value.findIndex((v) => v.orderState === Number
         :key="item.title"
         @tap="activeIndex = index"
       >
-        待付款
+        {{ item.title }}
       </text>
       <!-- 游标 -->
       <view class="cursor" :style="{ left: activeIndex * 20 + '%' }"></view>
