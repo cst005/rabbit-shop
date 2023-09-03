@@ -188,10 +188,10 @@
 </template>
 
 <style>
-/* #ifdef H5 */
+/* #ifdef H5 || APP-PLUS */
 /* 修复 H5 端骨架屏样式异常 */
-@import '../styles/category.scss';
-/* #endif */
+@import '../styles/category.scss'; /* #endif */
+
 .sk-transparent {
   color: transparent !important;
 }

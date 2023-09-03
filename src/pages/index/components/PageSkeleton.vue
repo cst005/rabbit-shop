@@ -157,17 +157,14 @@
 </template>
 
 <style>
-/* #ifdef H5 */
+/* #ifdef H5 || APP-PLUS */
 /* 修复 H5 端骨架屏样式异常 */
 /* 原因：H5 端样式自动开启 scoped 隔离，导致骨架屏的基础样式被隔离 */
-@import '../styles/category.scss';
-@import '../styles/hot.scss';
+@import '@/components/styles/XtxSwiper.scss';
+@import '../styles/CategoryPanel.scss';
+@import '../styles/HotPanel.scss';
+@import '@/components/styles/XtxGuess.scss';
 
-.carousel,
-.carousel .image {
-  height: 280rpx;
-  width: 100%;
-}
 /* #endif */
 
 .sk-transparent {

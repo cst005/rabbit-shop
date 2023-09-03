@@ -127,6 +127,12 @@
 </template>
 
 <style>
+/* #ifdef H5 || APP-PLUS */
+/* 修复 H5 端骨架屏样式异常 */
+@import '../styles//detail.scss';
+
+/* #endif */
+
 .sk-transparent {
   color: transparent !important;
 }
