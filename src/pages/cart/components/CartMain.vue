@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { InputNumberBoxEvent } from '@/components/vk-data-input-number-box/vk-data-input-number-box'
+import { useGuessList } from '@/composables'
 import {
   deleteMemberCartAPI,
   getMemberCartAPI,
@@ -10,6 +11,14 @@ import { useMemberStore } from '@/stores'
 import type { CartItem } from '@/types/cart'
 import { onShow } from '@dcloudio/uni-app'
 import { computed, ref } from 'vue'
+
+// 是否适配底部安全区域
+defineProps<{
+  safeAreaInsetBottom?: boolean
+}>()
+
+// 获取屏幕边界到安全区域距离
+const { safeAreaInsets } = uni.getSystemInfoSync()
 
 // 获取会员Store
 const memberStore = useMemberStore()
@@ -23,7 +32,6 @@ const getMemberCartData = async () => {
 
 // 初始化调用: 页面显示触发
 onShow(() => {
-  // 用户已登录才允许调用
   if (memberStore.profile) {
     getMemberCartData()
   }
@@ -103,10 +111,13 @@ const gotoPayment = () => {
   // 跳转到结算页
   uni.navigateTo({ url: '/pagesOrder/create/create' })
 }
+
+// 猜你喜欢
+const { guessRef, onScrolltolower } = useGuessList()
 </script>
 
 <template>
-  <scroll-view scroll-y class="scroll-view">
+  <scroll-view enable-back-to-top scroll-y class="scroll-view" @scrolltolower="onScrolltolower">
     <!-- 已登录: 显示购物车 -->
     <template v-if="memberStore.profile">
       <!-- 购物车列表 -->
@@ -164,12 +175,16 @@ const gotoPayment = () => {
       <view class="cart-blank" v-else>
         <image src="/static/images/blank_cart.png" class="image" />
         <text class="text">购物车还是空的，快来挑选好货吧</text>
-        <navigator url="/pages/index/index" hover-class="none">
+        <navigator url="/pages/index/index" hover-class="none" open-type="switchTab">
           <button class="button">去首页看看</button>
         </navigator>
       </view>
       <!-- 吸底工具栏 -->
-      <view class="toolbar">
+      <view
+        v-if="cartList.length"
+        class="toolbar"
+        :style="{ paddingBottom: safeAreaInsetBottom ? safeAreaInsets?.bottom + 'px' : 0 }"
+      >
         <text @tap="onChangeSelectedAll" class="all" :class="{ checked: isSelectedAll }">全选</text>
         <text class="text">合计:</text>
         <text class="amount">{{ selectedCartListMoney }}</text>
@@ -192,7 +207,7 @@ const gotoPayment = () => {
       </navigator>
     </view>
     <!-- 猜你喜欢 -->
-    <XtxGuess ref="guessRef"></XtxGuess>
+    <XtxGuess ref="guessRef" />
     <!-- 底部占位空盒子 -->
     <view class="toolbar-height"></view>
   </scroll-view>
@@ -415,6 +430,7 @@ const gotoPayment = () => {
   border-top: 1rpx solid #ededed;
   border-bottom: 1rpx solid #ededed;
   background-color: #fff;
+  box-sizing: content-box;
 
   .all {
     margin-left: 25rpx;
@@ -458,17 +474,13 @@ const gotoPayment = () => {
   }
 
   .button-grounp {
-    position: absolute;
-    right: 10rpx;
-    top: 50%;
-
+    margin-left: auto;
     display: flex;
     justify-content: space-between;
     text-align: center;
     line-height: 72rpx;
     font-size: 13px;
     color: #fff;
-    transform: translateY(-50%);
 
     .button {
       width: 240rpx;
@@ -488,6 +500,5 @@ const gotoPayment = () => {
 // 底部占位空盒子
 .toolbar-height {
   height: 100rpx;
-  box-sizing: content-box;
 }
 </style>
